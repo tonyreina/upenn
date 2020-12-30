@@ -40,8 +40,11 @@ img_rows, img_cols = 28, 28
 (x_train, y_train), (x_test, y_test) = K.datasets.mnist.load_data()
 
 # Shard the training dataset randomly based on the Horovod rank
+num_shard = int(x_train.shape[0]//hvd.size())
 x_train = x_train[hvd.rank()::hvd.size()] 
 y_train = y_train[hvd.rank()::hvd.size()]
+x_train = x_train[:num_shard]  # Make sure every worker has same sized shard
+y_train = y_train[:num_shard]  # Make sure every worker has same sized shard
 
 x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
 x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
