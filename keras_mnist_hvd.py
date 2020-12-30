@@ -75,10 +75,10 @@ model.add(K.layers.Dense(num_classes, activation='softmax'))
 opt = K.optimizers.Adam(0.0001 * hvd.size())
 
 # Horovod: add Horovod Distributed Optimizer.
-opt = hvd.DistributedOptimizer(opt)
+opt_hvd = hvd.DistributedOptimizer(opt)
 
 model.compile(loss=K.losses.categorical_crossentropy,
-              optimizer=opt,
+              optimizer=opt_hvd,
               metrics=['accuracy'])
 
 callbacks = [
