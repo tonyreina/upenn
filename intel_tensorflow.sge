@@ -52,6 +52,5 @@ date
 
 export TF_DISABLE_MKL=0   # Disable optimizations?
 export DNNL_VERBOSE=0     # Debug log showing all optimizations
-export NUM_EPOCHS=3
 
-/usr/bin/time -pv python /cbica/home/reinag/keras_mnist.py --epochs $NUM_EPOCHS
+/usr/bin/time -pv python /cbica/home/reinag/keras_mnist.py --epochs 3 --batch_size 128
