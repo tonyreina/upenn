@@ -57,6 +57,6 @@ export DNNL_VERBOSE=0     # Debug log showing all optimizations
 /usr/bin/time -pv horovodrun --gloo -np 4 \
       --binding-args="-bind-to socket -map-by socket -rank-by core" \
       --mpi-args="-report-bindings" \
-      python keras_mnist_hvd.py --epochs 3
+      python keras_mnist_hvd.py --epochs 3 --batch_size 128
 
 /bin/echo -e "Horovod run stopped at: \c"; date
