@@ -34,7 +34,7 @@
 ################################## END OF DEFAULT EMBEDDED SGE COMMANDS###################
 
 /bin/echo "Command: /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python"
-/bin/echo "Arguments: /cbica/home/reinag/keras_mnist_hvd.py"
+/bin/echo "Arguments: keras_mnist_hvd.py"
 /bin/echo -e "Executing in: \c"; pwd
 /bin/echo -e "Executing on: \c"; hostname
 /bin/echo -e " \c"; lscpu
@@ -42,7 +42,7 @@
 /bin/echo "----- STDOUT from /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python below this line -----"
 
 /bin/echo "Command: /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python" 1>&2
-/bin/echo "Arguments: /cbica/home/reinag/keras_mnist_hvd.py" 1>&2
+/bin/echo "Arguments: keras_mnist_hvd.py" 1>&2
 ( /bin/echo -e "Executing in: \c"; pwd ) 1>&2
 ( /bin/echo -e "Executing on: \c"; hostname ) 1>&2
 ( /bin/echo -e "Executing at: \c"; date ) 1>&2
