@@ -1,0 +1,62 @@
+#! /bin/bash
+#
+# Intel-optimized TensorFlow multi-node training (via Horovod)
+#
+# This script has been created to run the /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python
+# command and is designed to be run via qsub, as in:
+#		qsub /path/to/scriptname
+#
+# The script can be customized as needed.
+#
+################################## START OF EMBEDDED SGE COMMANDS #######################
+### SGE will read options that are treated by the shell as comments. The
+### SGE parameters must begin with the characters "#$", followed by the
+### option.
+###
+### There should be no blank lines or non-comment lines within the block of
+### embedded "qsub" commands.
+###
+############################ Standard parameters to the "qsub" command ##########
+#### Set the shell (under SGE).
+#$ -S /bin/bash
+####
+#### Run the commands in the directory where the SGE "qsub" command was given:
+#$ -cwd
+####
+#### Place the output and error logs into these files
+#$ -e horovod/$JOB_ID_$JOB_NAME.err    # Error logs
+#$ -o horovod/$JOB_ID_$JOB_NAME.out    # Output logs
+####
+####
+#### Request multiple cores/threads
+#$ -pe threaded 32   # number of cores to request for job
+####
+################################## END OF DEFAULT EMBEDDED SGE COMMANDS###################
+
+/bin/echo "Command: /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python"
+/bin/echo "Arguments: /cbica/home/reinag/keras_mnist_hvd.py"
+/bin/echo -e "Executing in: \c"; pwd
+/bin/echo -e "Executing on: \c"; hostname
+/bin/echo -e " \c"; lscpu
+/bin/echo -e "Executing at: \c"; date
+/bin/echo "----- STDOUT from /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python below this line -----"
+
+/bin/echo "Command: /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python" 1>&2
+/bin/echo "Arguments: /cbica/home/reinag/keras_mnist_hvd.py" 1>&2
+( /bin/echo -e "Executing in: \c"; pwd ) 1>&2
+( /bin/echo -e "Executing on: \c"; hostname ) 1>&2
+( /bin/echo -e "Executing at: \c"; date ) 1>&2
+( /bin/echo -e "Executing on CPU: \c"; lscpu ) 1>&2
+/bin/echo "----- STDERR from /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python below this line -----" 1>&2
+
+module load horovod/0.21.0
+
+export TF_DISABLE_MKL=0   # Disable optimizations?
+export DNNL_VERBOSE=0     # Debug log showing all optimizations
+
+/usr/bin/time -pv horovodrun --gloo -np 4 \
+      --binding-args="-bind-to socket -map-by socket -rank-by core" \
+      --mpi-args="-report-bindings" \
+      python keras_mnist_hvd.py --epochs 3
+
+/bin/echo -e "Horovod run stopped at: \c"; date

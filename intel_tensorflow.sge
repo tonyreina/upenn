@@ -1,0 +1,57 @@
+#! /bin/bash
+# Intel Optimized TensorFlow (single node training)
+#
+# This script has been created to run the /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python 
+# command and is designed to be run via qsub, as in:
+#		qsub /path/to/scriptname
+#
+# The script can be customized as needed.
+#
+################################## START OF EMBEDDED SGE COMMANDS #######################
+### SGE will read options that are treated by the shell as comments. The
+### SGE parameters must begin with the characters "#$", followed by the
+### option.
+###
+### There should be no blank lines or non-comment lines within the block of
+### embedded "qsub" commands.
+###
+############################ Standard parameters to the "qsub" command ##########
+#### Set the shell (under SGE).
+#$ -S /bin/bash
+####
+#### Run the commands in the directory where the SGE "qsub" command was given:
+#$ -cwd
+####
+####
+#### Place the error and output logs into these files
+#$ -e single_node/$JOB_ID_$JOB_NAME.err   # Error logs
+#$ -o single_node/$JOB_ID_$JOB_NAME.out   # Output logs
+####
+#### Use multiple threads
+#$ -pe threaded 32  # Number of cores to request
+################################## END OF DEFAULT EMBEDDED SGE COMMANDS###################
+
+
+/bin/echo "Command: /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python"
+/bin/echo "Arguments: /cbica/home/reinag/keras_mnist.py"
+/bin/echo -e "Executing in: \c"; pwd
+/bin/echo -e "Executing on: \c"; hostname
+/bin/echo -e "Executing at: \c"; date
+/bin/echo "----- STDOUT from /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python below this line -----"
+
+/bin/echo "Command: /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python" 1>&2
+/bin/echo "Arguments: /cbica/home/reinag/keras_mnist.py" 1>&2
+( /bin/echo -e "Executing in: \c"; pwd ) 1>&2
+( /bin/echo -e "Executing on: \c"; hostname ) 1>&2
+( /bin/echo -e "Executing at: \c"; date ) 1>&2
+/bin/echo "----- STDERR from /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python below this line -----" 1>&2
+
+module load horovod/0.21.0
+lscpu
+date
+
+export TF_DISABLE_MKL=0   # Disable optimizations?
+export DNNL_VERBOSE=0     # Debug log showing all optimizations
+export NUM_EPOCHS=3
+
+/usr/bin/time -pv python /cbica/home/reinag/keras_mnist.py --epochs $NUM_EPOCHS
