@@ -28,21 +28,17 @@
 #$ -o horovod/$JOB_ID_$JOB_NAME.out    # Output logs
 ####
 ####
-#### Request multiple cores/threads
-#$ -pe threaded 32   # number of cores to request for job
+#### Request multiple openmpi workers
+#$ -pe openmpi 7   # number of workers
 ####
 ################################## END OF DEFAULT EMBEDDED SGE COMMANDS###################
 
-/bin/echo "Command: /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python"
-/bin/echo "Arguments: keras_mnist_hvd.py"
 /bin/echo -e "Executing in: \c"; pwd
 /bin/echo -e "Executing on: \c"; hostname
 /bin/echo -e " \c"; lscpu
 /bin/echo -e "Executing at: \c"; date
 /bin/echo "----- STDOUT from /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python below this line -----"
 
-/bin/echo "Command: /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python" 1>&2
-/bin/echo "Arguments: keras_mnist_hvd.py" 1>&2
 ( /bin/echo -e "Executing in: \c"; pwd ) 1>&2
 ( /bin/echo -e "Executing on: \c"; hostname ) 1>&2
 ( /bin/echo -e "Executing at: \c"; date ) 1>&2
@@ -51,12 +47,8 @@
 
 module load horovod/0.21.0
 
-export TF_DISABLE_MKL=0   # Disable optimizations?
-export DNNL_VERBOSE=0     # Debug log showing all optimizations
-
-/usr/bin/time -pv horovodrun --gloo -np 4 \
-      --binding-args="-bind-to socket -map-by socket -rank-by core" \
-      --mpi-args="-report-bindings" \
-      python keras_mnist_hvd.py --epochs 3 --batch_size 128
+/usr/bin/time -pv mpirun -np $NSLOTS \
+       --report-bindings --map-by socket:pe=6 \
+       bash horovod_job.sh
 
 /bin/echo -e "Horovod run stopped at: \c"; date
