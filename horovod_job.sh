@@ -2,5 +2,5 @@
 
 module load horovod/0.21.0
 
-python keras_mnist_hvd.py --epochs 3 --batch_size 128
+OMP_NUM_THREADS=16 python keras_mnist_hvd.py --epochs 8 --batch_size 64
 

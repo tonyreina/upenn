@@ -29,7 +29,7 @@
 ####
 ####
 #### Request multiple openmpi workers
-#$ -pe openmpi 7   # number of workers
+#$ -pe openmpi  10   # number of workers
 ####
 ################################## END OF DEFAULT EMBEDDED SGE COMMANDS###################
 
@@ -37,6 +37,9 @@
 /bin/echo -e "Executing on: \c"; hostname
 /bin/echo -e " \c"; lscpu
 /bin/echo -e "Executing at: \c"; date
+/bin/echo -e $ARC
+/bin/echo -e $HOSTNAME
+
 /bin/echo "----- STDOUT from /cbica/external/python/anaconda/3/envs/horovod/0.21.0/bin/python below this line -----"
 
 ( /bin/echo -e "Executing in: \c"; pwd ) 1>&2
