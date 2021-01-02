@@ -29,7 +29,7 @@
 ####
 ####
 #### Request multiple openmpi workers
-#$ -pe openmpi  10   # number of workers
+#$ -pe openmpi  3   # number of workers
 ####
 ################################## END OF DEFAULT EMBEDDED SGE COMMANDS###################
 

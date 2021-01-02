@@ -24,7 +24,6 @@
 
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 import pathlib
 from PIL import Image
 

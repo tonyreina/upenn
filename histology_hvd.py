@@ -24,10 +24,9 @@
 
 import os
 import numpy as np
-import matplotlib.pyplot as plt
 import pathlib
 from PIL import Image
-
+import socket
 
 # export TF_DISABLE_MKL=1
 os.environ["TF_DISABLE_MKL"]  = "0"  # Disable Intel optimizations
@@ -45,7 +44,7 @@ os.environ["KMP_AFFINITY"]    = "granularity=thread,compact,1,0"
 #os.environ["KMP_AFFINITY"]   = "granularity=thread,compact"
 
 import tensorflow as tf
-import horovod.tensorflow.keras as tf
+import horovod.tensorflow.keras as hvd
 
 # Horovod: initialize Horovod.
 hvd.init()
@@ -231,10 +230,10 @@ ds_test = leftover_ds.skip(LEFTOVER_IDX)
 
 # Get train dataset
 # Take shard
-ds_train = ds_train.shuffle(SPLIT_IDX, seed=hvd.rank()).take(int(SPLIT_IDX//hvd.size())
+ds_train = ds_train.shuffle(SPLIT_IDX, seed=hvd.rank()).take(int(SPLIT_IDX//hvd.size()))
 ds_train = ds_train.map(lambda x: tf.py_function(process_path,
                                              [x, CLASS_NAMES], [tf.float32, tf.int32]),
-                    num_parallel_calls=tf.data.experimental.AUTOTUNE)
+                                             num_parallel_calls=tf.data.experimental.AUTOTUNE)
 ds_train = ds_train.map(
     augment_img, num_parallel_calls=tf.data.experimental.AUTOTUNE)
 ds_train = ds_train.cache()
@@ -298,7 +297,7 @@ opt_hvd = hvd.DistributedOptimizer(opt)
                                                              
 model.compile(
     loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
-    optimizer=hvd_opt,
+    optimizer=opt_hvd,
     metrics=[tf.metrics.SparseCategoricalAccuracy()],
 )
 
@@ -316,7 +315,7 @@ callbacks=[]
 # Create a callback that saves the model
 # Horovod: save checkpoints only on worker 0 to prevent other workers from corrupting them.
 if hvd.rank() == 0:
-                                                         
+    model_dir = "checkpoints_histology"                                                         
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(filepath=model_dir, 
                                                              save_best_only=True,
                                                              verbose=1)
@@ -349,7 +348,6 @@ if hvd.rank() == 0:
 # Horovod-specific callbacks
 callbacks.append(hvd.callbacks.BroadcastGlobalVariablesCallback(0))
 callbacks.append(hvd.callbacks.MetricAverageCallback())
-callbacks.append(hvd.callbacks.LearningRateWarmupCallback(warmup_epochs=2, verbose=1))
 
 epochs = 6   # Run for this many epochs - Increase if you have some time
 history = model.fit(
