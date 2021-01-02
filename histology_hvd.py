@@ -221,9 +221,9 @@ LEFTOVER_IDX=int(LEFTOVER_SIZE*0.50)
 leftover_ds = ds.skip(SPLIT_IDX)
 
 # Create the train, validation, test splits
-TRAIN_BZ=128
-VALIDATION_BZ=64
-TESTING_BZ=64
+TRAIN_BZ=32
+VALIDATION_BZ=32
+TESTING_BZ=32
 ds_train = ds.take(SPLIT_IDX)
 ds_validation = leftover_ds.take(LEFTOVER_IDX)
 ds_test = leftover_ds.skip(LEFTOVER_IDX)
